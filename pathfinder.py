@@ -51,3 +51,28 @@ class Grid:
         self.cells = [[0]*COLS for _ in range(ROWS)]
         self._place_default_walls()
 
+# ── BFS ──────────────────────────────────────
+def bfs(grid):
+    start, target = grid.start, grid.target
+    queue    = deque([start])
+    parent   = {start: None}
+    explored = set()
+    frontier = {start}
+    while queue:
+        node = queue.popleft()
+        frontier.discard(node)
+        explored.add(node)
+        if node == target:
+            yield {"explored":explored,"frontier":frontier,
+                   "path":reconstruct(parent,node),"done":True}
+            return
+        for dr,dc in DIRECTIONS:
+            nb = (node[0]+dr, node[1]+dc)
+            if grid.is_valid(*nb) and nb not in parent:
+                parent[nb] = node
+                queue.append(nb)
+                frontier.add(nb)
+        yield {"explored":explored,"frontier":frozenset(frontier),
+               "path":[],"done":False}
+    yield {"explored":explored,"frontier":frozenset(),"path":[],"done":True}
+
