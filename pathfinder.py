@@ -76,3 +76,29 @@ def bfs(grid):
                "path":[],"done":False}
     yield {"explored":explored,"frontier":frozenset(),"path":[],"done":True}
 
+# ── DFS ──────────────────────────────────────
+def dfs(grid):
+    start, target = grid.start, grid.target
+    stack    = [start]
+    parent   = {start: None}
+    explored = set()
+    frontier = {start}
+    while stack:
+        node = stack.pop()
+        if node in explored: continue
+        frontier.discard(node)
+        explored.add(node)
+        if node == target:
+            yield {"explored":explored,"frontier":frontier,
+                   "path":reconstruct(parent,node),"done":True}
+            return
+        for dr,dc in reversed(DIRECTIONS):
+            nb = (node[0]+dr, node[1]+dc)
+            if grid.is_valid(*nb) and nb not in explored:
+                if nb not in parent: parent[nb] = node
+                stack.append(nb)
+                frontier.add(nb)
+        yield {"explored":explored,"frontier":frozenset(frontier),
+               "path":[],"done":False}
+    yield {"explored":explored,"frontier":frozenset(),"path":[],"done":True}
+
