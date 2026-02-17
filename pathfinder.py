@@ -102,3 +102,36 @@ def dfs(grid):
                "path":[],"done":False}
     yield {"explored":explored,"frontier":frozenset(),"path":[],"done":True}
 
+
+# ── UCS ──────────────────────────────────────
+def ucs(grid):
+    start, target = grid.start, grid.target
+    heap     = [(0, start)]
+    cost     = {start: 0}
+    parent   = {start: None}
+    explored = set()
+    frontier = {start}
+    while heap:
+        g, node = heapq.heappop(heap)
+        frontier.discard(node)
+        if node in explored:
+            yield {"explored":explored,"frontier":frozenset(frontier),
+                   "path":[],"done":False}
+            continue
+        explored.add(node)
+        if node == target:
+            yield {"explored":explored,"frontier":frontier,
+                   "path":reconstruct(parent,node),"done":True}
+            return
+        for dr,dc in DIRECTIONS:
+            nb = (node[0]+dr, node[1]+dc)
+            step_cost = 1.4 if (dr!=0 and dc!=0) else 1.0
+            new_cost  = g + step_cost
+            if grid.is_valid(*nb) and (nb not in cost or new_cost < cost[nb]):
+                cost[nb] = new_cost; parent[nb] = node
+                heapq.heappush(heap, (new_cost, nb))
+                frontier.add(nb)
+        yield {"explored":explored,"frontier":frozenset(frontier),
+               "path":[],"done":False}
+    yield {"explored":explored,"frontier":frozenset(),"path":[],"done":True}
+
