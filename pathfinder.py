@@ -195,3 +195,50 @@ def iddfs(grid):
                    "path":[],"done":False}
     yield {"explored":explored_total,"frontier":frozenset(),"path":[],"done":True}
 
+
+# ── Bidirectional ─────────────────────────────
+def bidirectional(grid):
+    start, target = grid.start, grid.target
+    fwd_queue   = deque([start]); bwd_queue   = deque([target])
+    fwd_visited = {start: None};  bwd_visited = {target: None}
+    explored    = set()
+    frontier_set= {start, target}
+    def build_path(meet):
+        pf=[]; n=meet
+        while n is not None: pf.append(n); n=fwd_visited[n]
+        pf.reverse()
+        pb=[]; n=bwd_visited[meet]
+        while n is not None: pb.append(n); n=bwd_visited[n]
+        return pf+pb
+    while fwd_queue or bwd_queue:
+        if fwd_queue:
+            node = fwd_queue.popleft()
+            frontier_set.discard(node); explored.add(node)
+            if node in bwd_visited:
+                yield {"explored":explored,"frontier":frozenset(frontier_set),
+                       "path":build_path(node),"done":True}
+                return
+            for dr,dc in DIRECTIONS:
+                nb=(node[0]+dr,node[1]+dc)
+                if grid.is_valid(*nb) and nb not in fwd_visited:
+                    fwd_visited[nb]=node; fwd_queue.append(nb); frontier_set.add(nb)
+        if bwd_queue:
+            node = bwd_queue.popleft()
+            frontier_set.discard(node); explored.add(node)
+            if node in fwd_visited:
+                yield {"explored":explored,"frontier":frozenset(frontier_set),
+                       "path":build_path(node),"done":True}
+                return
+            for dr,dc in DIRECTIONS:
+                nb=(node[0]+dr,node[1]+dc)
+                if grid.is_valid(*nb) and nb not in bwd_visited:
+                    bwd_visited[nb]=node; bwd_queue.append(nb); frontier_set.add(nb)
+        yield {"explored":explored,"frontier":frozenset(frontier_set),
+               "path":[],"done":False}
+    yield {"explored":explored,"frontier":frozenset(),"path":[],"done":True}
+
+ALGO_MAP = {
+    "BFS":bfs,"DFS":dfs,"UCS":ucs,
+    "DLS":dls,"IDDFS":iddfs,"Bidirectional":bidirectional,
+}
+
