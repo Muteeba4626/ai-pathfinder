@@ -1,4 +1,3 @@
-"""
 GOOD PERFORMANCE TIME APP
 AI Pathfinder - Uninformed Search Visualization
 """
