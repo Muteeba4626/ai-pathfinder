@@ -1,5 +1,5 @@
 # GOOD PERFORMANCE TIME APP
-### AI Pathfinder – Uninformed Search Visualization
+### AI Pathfinder using Uninformed Search Visualization
 
 ## Install & Run
 ```bash
@@ -10,14 +10,14 @@ python pathfinder.py
 ## Algorithms
 | # | Algorithm | Complete | Optimal |
 |---|-----------|----------|---------|
-| 1 | BFS | ✅ | ✅ |
-| 2 | DFS | ✅ | ❌ |
-| 3 | UCS | ✅ | ✅ |
-| 4 | DLS | ❌ | ❌ |
-| 5 | IDDFS | ✅ | ✅ |
-| 6 | Bidirectional | ✅ | ~ |
+| 1 | BFS | yes | yes |
+| 2 | DFS | yes | no |
+| 3 | UCS | yes | yes |
+| 4 | DLS | no | no |
+| 5 | IDDFS | yes | yes |
+| 6 | Bidirectional | no | ~ |
 
-## Movement Order (Clockwise + All Diagonals)
+## Movement Order 
 Up → Right → Down → Bottom-Right → Left → Top-Left → Top-Right → Bottom-Left
 
 ## Dynamic Obstacles
@@ -25,5 +25,5 @@ Up → Right → Down → Bottom-Right → Left → Top-Left → Top-Right → B
 
 ## Controls
 - Click algorithm buttons to select
-- ▶ START to run, ■ STOP to pause, ↺ RESET to clear
+- Press START button to run, STOP button  to pause and  RESET button to clear
 - Draw Walls / Set Start / Set Target with the editor buttons
