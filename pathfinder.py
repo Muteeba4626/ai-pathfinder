@@ -135,3 +135,63 @@ def ucs(grid):
                "path":[],"done":False}
     yield {"explored":explored,"frontier":frozenset(),"path":[],"done":True}
 
+
+# ── DLS ──────────────────────────────────────
+def dls(grid, limit=DLS_LIMIT):
+    start, target = grid.start, grid.target
+    stack    = [(start, 0, {start: None})]
+    vis      = {start}
+    explored = set()
+    frontier = {start}
+    while stack:
+        node, depth, pmap = stack.pop()
+        frontier.discard(node)
+        explored.add(node)
+        if node == target:
+            yield {"explored":explored,"frontier":frozenset(frontier),
+                   "path":reconstruct(pmap,node),"done":True}
+            return
+        if depth < limit:
+            for dr,dc in reversed(DIRECTIONS):
+                nb = (node[0]+dr, node[1]+dc)
+                if grid.is_valid(*nb) and nb not in vis:
+                    vis.add(nb)
+                    new_pmap = dict(pmap); new_pmap[nb] = node
+                    stack.append((nb, depth+1, new_pmap))
+                    frontier.add(nb)
+        yield {"explored":explored,"frontier":frozenset(frontier),
+               "path":[],"done":False}
+    yield {"explored":explored,"frontier":frozenset(),"path":[],"done":True}
+
+# ── IDDFS ─────────────────────────────────────
+def iddfs(grid):
+    start, target = grid.start, grid.target
+    explored_total = set()
+    frontier_set   = set()
+    for depth_limit in range(1, ROWS*COLS):
+        stack = [(start, 0, {start: None})]
+        vis   = {start}
+        explored = set()
+        frontier = {start}
+        while stack:
+            node, depth, pmap = stack.pop()
+            frontier.discard(node)
+            explored.add(node)
+            explored_total.add(node)
+            if node == target:
+                yield {"explored":explored_total,"frontier":frozenset(frontier),
+                       "path":reconstruct(pmap,node),"done":True}
+                return
+            if depth < depth_limit:
+                for dr,dc in reversed(DIRECTIONS):
+                    nb = (node[0]+dr, node[1]+dc)
+                    if grid.is_valid(*nb) and nb not in vis:
+                        vis.add(nb)
+                        new_pmap = dict(pmap); new_pmap[nb] = node
+                        stack.append((nb, depth+1, new_pmap))
+                        frontier.add(nb); frontier_set.add(nb)
+            yield {"explored":explored_total,
+                   "frontier":frozenset(frontier_set - explored_total),
+                   "path":[],"done":False}
+    yield {"explored":explored_total,"frontier":frozenset(),"path":[],"done":True}
+
